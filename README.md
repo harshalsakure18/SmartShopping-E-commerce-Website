@@ -32,9 +32,7 @@ git clone https://github.com/harshalsakure18/SmartShopping-FullStack.git
 cd SmartShopping-FullStack
 
 2. Setup Frontend
-bash
-Copy
-Edit
+
 cd ecom-frontend
 npm install     # or yarn
 npm run dev     # Starts frontend on http://localhost:5173
@@ -44,9 +42,6 @@ Uses localStorage for login/session/cart data
 3. Setup Backend
 Open a new terminal window:
 
-bash
-Copy
-Edit
 cd ecom-backend
 npm install     # or yarn
 npm run dev     # Starts backend on http://localhost:5000
