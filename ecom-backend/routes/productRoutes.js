@@ -1,0 +1,96 @@
+
+const express = require('express');
+const Product = require('../models/productModel'); // Import the product model
+const router = express.Router();
+ 
+// ✅ Add a new product
+router.post('/', async (req, res) => {
+    try {
+        const newProduct = new Product(req.body);
+        const savedProduct = await newProduct.save();
+        res.status(201).json(savedProduct);
+    } catch (error) {
+        res.status(400).json({ error: error.message });
+    }
+});
+ 
+ 
+// ✅ Get all products OR filter by category
+router.get('/', async (req, res) => {
+    try {
+        const { category } = req.query; // Extract category from query parameters
+        let query = {}; // Default: Fetch all products
+ 
+        if (category) {
+            query.category = category; // If category is provided, filter products
+        }
+ 
+        const products = await Product.find(query); // Fetch products from DB
+        res.json(products);
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+});
+ 
+// ✅ Get a single product by ID
+router.get('/:id', async (req, res) => {
+    try {
+        const product = await Product.findById(req.params.id);
+        if (!product) return res.status(404).json({ message: "Product not found" });
+        res.json(product);
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+});
+ 
+// ✅ Update a product by ID
+router.put('/:id', async (req, res) => {
+    try {
+        const updatedProduct = await Product.findByIdAndUpdate(req.params.id, req.body, { new: true });
+        res.json(updatedProduct);
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+});
+ 
+// ✅ Delete a product by ID
+router.delete('/:id', async (req, res) => {
+    try {
+        await Product.findByIdAndDelete(req.params.id);
+        res.json({ message: "Product deleted successfully" });
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+});
+ 
+// ✅ Add/Remove product from Wishlist
+router.patch('/:id/wishlist', async (req, res) => {
+    try {
+        const product = await Product.findById(req.params.id);
+        if (!product) return res.status(404).json({ message: "Product not found" });
+ 
+        product.wishlist = !product.wishlist; // Toggle wishlist status
+        await product.save();
+        res.json({ message: "Wishlist updated", wishlist: product.wishlist });
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+});
+ 
+// ✅ Add/Remove product from Cart
+router.patch('/:id/cart', async (req, res) => {
+    try {
+        const product = await Product.findById(req.params.id);
+        if (!product) return res.status(404).json({ message: "Product not found" });
+ 
+        product.addToCart = !product.addToCart; // Toggle addToCart status
+        await product.save();
+        res.json({ message: "Cart updated", addToCart: product.addToCart });
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+});
+ 
+module.exports = router;
+ 
+ 
